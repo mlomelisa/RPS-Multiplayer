@@ -1,3 +1,89 @@
+
+
+ var firebaseConfig = {
+  apiKey: "AIzaSyDBCYFOGOmD95zfLSBFiofOde2kfO7-XMs",
+  authDomain: "testfirebase-ce82f.firebaseapp.com",
+  databaseURL: "https://testfirebase-ce82f.firebaseio.com",
+  projectId: "testfirebase-ce82f",
+  storageBucket: "testfirebase-ce82f.appspot.com",
+  messagingSenderId: "963993073118",
+  appId: "1:963993073118:web:24f92b514b54cc71"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Variable to reference the database.
+var database = firebase.database();
+
+// The max number of players. if there are already
+//Num_players assigned users wont be able to join the game
+var num_players = 2;
+var game_location = database.ref('RPS');
+// Location under game_location that will use store the list
+//of players who have joined the game (up to Max_players])
+var players_location = 'playerList';
+// Location under game_location that will use store data
+//for each player (game state)
+var player_data_location = 'playerData';
+
+//Function main
+
+$('#btnLogin').on('click', function(event){
+  
+  var gameRef = database.ref(game_location);
+  assignPlayerNumberandPlayGame(userID, gameRef); 
+
+});
+// Function assign userID
+
+database.ref().child('RPS').child('playerData').on('value', function(snapshot){
+  snapshot.forEach(function(childSnapshot){
+    
+      $('#player1').text(snapshot.child(0).val().userID);
+       
+      $('#player2').text(snapshot.child(1).val().userID);
+
+  })
+  
+});
+    
+
+
+
+
+
+//Connections reference stored in DB
+var connectionsRef = database.ref("/sessions");
+// variable to find when connection state changes
+var connectedRef = database.ref(".info/connected");
+
+
+
+
+// When the client's connection change
+connectedRef.on("value", function(snap){
+
+  if(snap.val()){
+    var con = connectionsRef.push(true);
+    con.onDisconnect().remove();
+  }
+}); //Connection state changes
+
+
+//When first loaded or when connection list change
+
+
+connectionsRef.on("value", function(snap){
+  $('#connected-viewers').text(snap.numChildren());
+});//connections loadpage
+
+
+
+
+
+
+
+
 let userScore = 0;
 let computerScore = 0;
 const userScore_span = document.getElementById("user-score");
